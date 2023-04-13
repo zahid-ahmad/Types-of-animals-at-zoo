@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Animal Classifier</title>
+</head>
+<style>
+    body {
+        background-color: #b12c2c;
+        font-family: sans-serif;
+    }
+    
+    h1 {
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    form {
+        width: 600px;
+        margin: 0 auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px #cccccc;
+    }
+    
+    label {
+        display: block;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+    
+    input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-top: 5px;
+        box-sizing: border-box;
+    }
+    
+    button[type="submit"] {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #4caf50;
+        color: #ffffff;
+        font-size: 16px;
+        margin-top: 20px;
+        cursor: pointer;
+    }
+    
+    button[type="submit"]:hover {
+        background-color: #3e8e41;
+    }
+    
+    #output {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+</style>
+
+<body>
+    <h1>Animal Classifier</h1>
+    <form id="input-form">
+        <label for="hair">Hair:</label>
+        <input type="number" name="hair" id="hair" value="0"><br>
+        <label for="feathers">Feathers:</label>
+        <input type="number" name="feathers" id="feathers" value="0"><br>
+        <label for="eggs">Eggs:</label>
+        <input type="number" name="eggs" id="eggs" value="0"><br>
+        <label for="milk">Milk:</label>
+        <input type="number" name="milk" id="milk" value="0"><br>
+        <label for="airborne">Airborne:</label>
+        <input type="number" name="airborne" id="airborne" value="0"><br>
+        <label for="aquatic">Aquatic:</label>
+        <input type="number" name="aquatic" id="aquatic" value="0"><br>
+        <label for="predator">Predator:</label>
+        <input type="number" name="predator" id="predator" value="0"><br>
+        <label for="toothed">Toothed:</label>
+        <input type="number" name="toothed" id="toothed" value="0"><br>
+        <label for="backbone">Backbone:</label>
+        <input type="number" name="backbone" id="backbone" value="0"><br>
+        <label for="breathes">Breathes:</label>
+        <input type="number" name="breathes" id="breathes" value="0"><br>
+        <label for="venomous">Venomous:</label>
+        <input type="number" name="venomous" id="venomous" value="0"><br>
+        <label for="fins">Fins:</label>
+        <input type="number" name="fins" id="fins" value="0"><br>
+        <label for="legs">Legs:</label>
+        <input type="number" name="legs" id="legs" value="0"><br>
+        <label for="tail">Tail:</label>
+        <input type="number" name="tail" id="tail" value="0"><br>
+        <label for="domestic">Domestic:</label>
+        <input type="number" name="domestic" id="domestic" value="0"><br>
+        <label for="catsize">Catsize:</label>
+        <input type="number" name="catsize" id="catsize" value="0"><br>
+        <label for="Names">Names:</label>
+        <input type="number" name="Names" id="Names" value="0"><br>
+        <button type="submit">Classify</button>
+    </form>
+    <div id="output"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#input-form').submit(function(event) {
+                event.preventDefault();
+                var data = {
+                    hair: $('#hair').val(),
+                    feathers: $('#feathers').val(),
+                    eggs: $('#eggs').val(),
+                    milk: $('#milk').val(),
+                    airborne: $('#airborne').val(),
+                    aquatic: $('#aquatic').val(),
+                    predator: $('#predator').val(),
+                    toothed: $('#toothed').val(),
+                    backbone: $('#backbone').val(),
+                    breathes: $('#breathes').val(),
+                    venomous: $('#venomous').val(),
+                    fins: $('#fins').val(),
+                    legs: $('#legs').val(),
+                    tail: $('#tail').val(),
+                    domestic: $('#domestic').val(),
+                    catsize: $('#catsize').val(),
+                    Names: $('#Names').val()
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '/predict',
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#output').html('Predicted class: ' + response.output[10]);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                        alert('An error occurred while processing the request.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
