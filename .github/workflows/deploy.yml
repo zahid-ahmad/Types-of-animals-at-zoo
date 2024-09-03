@@ -1,4 +1,4 @@
-name: Deploy Flask App
+name: Deploy Flask App to Local Server
 
 on:
   push:
@@ -10,30 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout the repository
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.8.2
         with:
-          python-version: '3.x'
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Install dependencies
+      - name: Copy files to server
         run: |
-          python -m venv venv
-          source venv/bin/activate
+          rsync -avz --exclude='*.git*' ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/home/${{ secrets.SERVER_USER }}/flask_app
+
+      - name: Install dependencies on the server
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          cd ~/flask_app
           pip install -r requirements.txt
+          EOF
 
-      - name: Deploy to server
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SERVER_USER: your_username
-          SERVER_IP: your_server_ip
+      - name: Run Flask app on the server
         run: |
-          echo "$SSH_PRIVATE_KEY" | ssh-agent bash -c 'ssh-add -; \
-          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP \
-          "cd /path/to/your/project && \
-          git pull origin main && \
-          source venv/bin/activate && \
-          pip install -r requirements.txt && \
-          sudo systemctl restart your_flask_app.service"'
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          cd ~/flask_app
+          source venv/bin/activate
+          nohup python3 app.py &
+          EOF
