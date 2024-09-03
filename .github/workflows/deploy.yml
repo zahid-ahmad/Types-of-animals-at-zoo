@@ -26,6 +26,8 @@ jobs:
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           cd ~/flask_app
+          python3 -m venv venv
+          source venv/bin/activate
           pip install -r requirements.txt
           EOF
 
@@ -33,6 +35,6 @@ jobs:
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           cd ~/flask_app
+          source venv/bin/activate
           nohup python3 app.py &
           EOF
-
